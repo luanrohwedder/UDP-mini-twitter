@@ -104,7 +104,6 @@ private:
      * @param clientAddr Endereço do cliente que fez o pedido.
      * @param msg Ponteiro para a mensagem recebida.
      * 
-     * OBS: AINDA NÃO ESTÁ PRONTO
      */
     void handleClientListRequest(struct sockaddr_in, Message*);
 

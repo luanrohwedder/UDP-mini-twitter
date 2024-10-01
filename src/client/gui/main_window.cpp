@@ -50,6 +50,7 @@ void MainWindow::initialize_widgets()
     _refGlade->get_widget("scrolledWindowMain", _scrolledWindowMain);
     _refGlade->get_widget("viewportMain", _viewportMain);
     _refGlade->get_widget("listboxMain", _listboxMain);
+    _refGlade->get_widget("comboBoxID", _comboboxID);
 
     _btnTweet->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_btnTweet_clicked));
     _imgLogo->set("assets/twitter_small.png");
@@ -59,7 +60,7 @@ void MainWindow::initialize_widgets()
 
     if (!_boxApp || !_listboxMain || !_viewportMain || !_boxMain || !_mainGrid || 
         !_scrolledWindowMain || !_btnTweet || !_textTweet || !_labelUsername ||
-        !_imgLogo || !_scrolledWindowText)
+        !_imgLogo || !_scrolledWindowText || !_comboboxID)
     {
         g_warning("Failed to load one or more widgets from the Glade file.");
     }
@@ -78,8 +79,33 @@ void MainWindow::on_btnTweet_clicked()
 
     if (!tweetText.empty())
     {
-        _client->sendMessage(tweetText);
-        buffer->set_text("");
+        Gtk::TreeModel::iterator iter = _comboboxID->get_active();
+
+        if (iter)
+        {
+            Gtk::TreeModel::Row row = *iter;
+
+            int selectedClientID = row[columns.id];
+
+            if (selectedClientID != 0)
+            {
+                auto it = _client->getClientsOnline().find(selectedClientID);
+
+                if (it != _client->getClientsOnline().end())
+                {
+                    std::string dest = it->second + "#" + std::to_string(selectedClientID);
+                    addTweet("Eu (Privado) -> " + dest, tweetText);
+                }
+            }
+
+            _client->sendMessage(tweetText, Message::MSG, selectedClientID);
+            buffer->set_text("");
+        }
+        else
+        {
+            _client->sendMessage(tweetText);
+            buffer->set_text("");
+        }
     } 
 }
 
@@ -117,22 +143,29 @@ void MainWindow::on_window_hide()
 
 void MainWindow::handleMessage(Message* message)
 {
-    if (message->getOriginID() != _client->getId() && 
-        message->getText().rfind("STATUS: ", 0) != 0)
+    if (message->getText().rfind("STATUS: ", 0) == 0)
     {
-        addTweet(message->getUsername() + "#" + std::to_string(message->getOriginID()), message->getText());
-    }
-    else if (message->getOriginID() == _client->getId() && 
-        message->getText().rfind("STATUS: ", 0) != 0)
-    {
-        addTweet("Eu#" + std::to_string(message->getOriginID()), message->getText());
-    }
-    else if (message->getDestinationID() == _client->getId() &&
-        message->getText().rfind("STATUS: ", 0) == 0)
-    {
-        std::cout << message->getText() << std::endl;
+        if (message->getDestinationID() == _client->getId())
+            std::cout << message->getText() << std::endl;
+        return;
     }
 
+    if (message->getDestinationID() == 0)
+    {
+        if (message->getOriginID() == _client->getId())
+            addTweet("Eu#" + std::to_string(message->getOriginID()), message->getText());
+        else
+            addTweet(message->getUsername() + "#" + 
+                     std::to_string(message->getOriginID()), message->getText());
+    }
+    else
+    {
+        if (message->getOriginID() != _client->getId())
+            addTweet("Privado~ " + message->getUsername() + "#" + 
+                     std::to_string(message->getOriginID()), message->getText());
+        else
+            addTweet("Eu (Privado)#" + std::to_string(message->getOriginID()), message->getText());
+    }
 }
 
 void MainWindow::handleError(std::string message)
@@ -166,7 +199,8 @@ void MainWindow::handleClientList(Message *message)
 
     _client->setClientsOnline(newClients);
 
-    addChat();
+    updateComboBox(newClients);
+    addClient();
 }
 
 void MainWindow::addTweet(std::string username, std::string tweetText)
@@ -179,7 +213,7 @@ void MainWindow::addTweet(std::string username, std::string tweetText)
     });
 }
 
-void MainWindow::addChat()
+void MainWindow::addClient()
 {
     Glib::signal_idle().connect_once([this]() {
         std::lock_guard<std::mutex> lock(_textMutex);
@@ -193,6 +227,30 @@ void MainWindow::addChat()
             _listboxMain->prepend(*pLabel);
         }
 
+        show_all_children();
+    });
+}
+
+void MainWindow::updateComboBox(std::unordered_map<int, std::string> newClients) {
+    Glib::signal_idle().connect_once([this, newClients]() {
+        std::lock_guard<std::mutex> lock(_textMutex);
+
+        _comboboxID->unset_model();
+        auto comboModel = Gtk::ListStore::create(columns);
+
+        Gtk::TreeModel::Row emptyRow = *(comboModel->append());
+        emptyRow[columns.id] = 0;
+
+        for (const auto &client : newClients)
+        {
+            Gtk::TreeModel::Row row = *(comboModel->append());
+            row[columns.id] = client.first;
+        }
+        _comboboxID->set_model(comboModel);
+
+        if (_comboboxID->get_cells().empty())
+            _comboboxID->pack_start(columns.id);
+        
         show_all_children();
     });
 }

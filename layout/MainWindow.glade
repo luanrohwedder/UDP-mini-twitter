@@ -37,7 +37,7 @@
                     <property name="margin-top">4</property>
                   </object>
                   <packing>
-                    <property name="left-attach">5</property>
+                    <property name="left-attach">6</property>
                     <property name="top-attach">0</property>
                     <property name="height">2</property>
                   </packing>
@@ -70,7 +70,7 @@
                     </style>
                   </object>
                   <packing>
-                    <property name="left-attach">2</property>
+                    <property name="left-attach">3</property>
                     <property name="top-attach">0</property>
                     <property name="width">3</property>
                     <property name="height">2</property>
@@ -134,9 +134,19 @@
                     <property name="icon-name">image-missing</property>
                   </object>
                   <packing>
-                    <property name="left-attach">6</property>
+                    <property name="left-attach">7</property>
                     <property name="top-attach">0</property>
-                    <property name="width">2</property>
+                    <property name="height">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="comboBoxID">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
                     <property name="height">2</property>
                   </packing>
                 </child>

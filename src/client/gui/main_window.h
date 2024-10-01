@@ -6,6 +6,14 @@
 #include <thread>
 #include <mutex>
 
+class ClientColumns : public Gtk::TreeModel::ColumnRecord {
+public:
+    ClientColumns() {
+        add(id);
+    }
+    Gtk::TreeModelColumn<int> id;
+};
+
 class MainWindow : public Gtk::Window {
 public:
     MainWindow(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refGlade);
@@ -18,6 +26,8 @@ private:
     std::thread _listenThread;
     std::thread _clientsThread;
     std::mutex _textMutex;
+
+    ClientColumns columns;
 
     Gtk::Box* _boxApp;
     Gtk::Box* _boxMain;
@@ -33,6 +43,7 @@ private:
     Gtk::ScrolledWindow* _scrolledWindowMain;
     Gtk::Viewport* _viewportMain;
     Gtk::ListBox* _listboxMain;
+    Gtk::ComboBox* _comboboxID;
 
     void initialize_widgets();
     
@@ -45,8 +56,8 @@ private:
     void handleClientList(Message*);
 
     void addTweet(std::string, std::string);
-    void addChat();
-    void addStatus();
+    void addClient();
+    void updateComboBox(std::unordered_map<int, std::string>);
     
     Gtk::Box* createTweetWidget(std::string, std::string);
     Gtk::Box* createChatWidget(std::string, std::string);
