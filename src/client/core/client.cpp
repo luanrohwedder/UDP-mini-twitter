@@ -51,15 +51,9 @@ int Client::connectToServer()
     }
 }
 
-void Client::sendMessage(const std::string &msg, int destinationID)
+void Client::sendMessage(const std::string &msg, Message::MessageType messageType, int destinationID)
 {
-    Message message(Message::MSG, _id, destinationID, _username, msg);
-    message.send(_sockfd, _serverAddr);
-}
-
-void Client::sendDisconnect()
-{
-    Message message(Message::TCHAU, _id, 0, _username, "");
+    Message message(messageType, _id, destinationID, _username, msg);
     message.send(_sockfd, _serverAddr);
 }
 
@@ -74,60 +68,6 @@ Message* Client::receiveMessages()
     else
     {
         return nullptr;
-    }
-}
-
-void Client::receiveClientsOnline()
-{
-    Message req(Message::LIST, _id, 0, _username, "");
-    req.send(_sockfd, _serverAddr);
-
-    char buffer[BUFFER_SIZE];
-    socklen_t addrLen = sizeof(_serverAddr);
-    int n = recvfrom(_sockfd, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&_serverAddr, &addrLen);
-    
-    if (n > 0)
-    {
-        buffer[n] = '\0';
-
-        Message *msg = reinterpret_cast<Message *>(buffer);
-        //msg->hostByteOrder();
-
-        if (msg->getDestinationID() == _id && msg->getType() == Message::LIST)
-        {
-            std::string data = msg->getText();
-            std::istringstream ss(data);
-            std::string line;
-
-            while (std::getline(ss, line))
-            {
-                std::istringstream lineStream(line);
-                int id;
-                std:: string username, ip, port;
-
-                lineStream >> id;
-                lineStream.ignore();
-                std::getline(lineStream, username, ':');
-                std::getline(lineStream, ip, ':');
-                std::getline(lineStream, port);
-
-                if (_clientsOnline.find(id) == _clientsOnline.end())
-                {
-                    struct sockaddr_in address;
-                    memset(&address, 0, sizeof(address));
-                    address.sin_family = AF_INET;
-                    address.sin_port = htons(std::stoi(port));
-                    inet_pton(AF_INET, ip.c_str(), &address.sin_addr);
-                    
-                    _clientsOnline.insert({id, {address, username}});
-                }
-            }
-            
-        }
-        else
-        {
-            //handle error
-        }
     }
 }
 

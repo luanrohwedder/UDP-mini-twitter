@@ -51,18 +51,11 @@ public:
      *     será enviado.
      * 
      * @param message Conteúdo da mensagem a ser enviada
+     * @param messagetType Tipo da mensagem (Padrão MSG)
      * @param destinationID ID do destino (Padrão 0)
-     */
-    void sendMessage(const std::string&, int = 0);
-
-    /**
-     * @brief Envia uma mensagem de desconexão ao servidor
-     * 
-     * Faz o envio de `Message TCHAU` ao servidor, encerrando a conexão com o 
-     *     servidor.
      * 
      */
-    void sendDisconnect();
+    void sendMessage(const std::string&, Message::MessageType = Message::MSG, int = 0);
 
     /**
      * @brief Recebe mensagens do servidor
@@ -70,9 +63,6 @@ public:
      * @return Message* Ponteiro para a mensagem recebida
      */
     Message* receiveMessages();
-
-    
-    void receiveClientsOnline();
 
     /*
     * Getters
