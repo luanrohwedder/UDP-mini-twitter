@@ -16,40 +16,40 @@ private:
     std::unique_ptr<Client> _client;
     Glib::RefPtr<Gtk::Builder> _refGlade;
     std::thread _listenThread;
+    std::thread _clientsThread;
     std::mutex _textMutex;
 
     Gtk::Box* _boxApp;
-    Gtk::StackSidebar* _stackSidebar;
-    Gtk::Stack* _stack;
     Gtk::Box* _boxMain;
     Gtk::Grid* _mainGrid;
-    Gtk::Box* _boxClients;
-    Gtk::Grid* _clientGrid;
     Gtk::HeaderBar* _headerBar;
     Gtk::Button* _btnTweet;
     Gtk::TextView* _textTweet;
     Gtk::Label* _labelUsername;
     Gtk::Image* _imgLogo;
-    Gtk::Box* _boxListClients;
-    Gtk::Stack* _stackClients;
-    Gtk::StackSidebar* _stackClientsSidebar;
     Gtk::ScrolledWindow* _scrolledWindowText;
     Gtk::Viewport* _viewTweets;
     Gtk::ListBox* _boxTweets;
+    Gtk::ScrolledWindow* _scrolledWindowMain;
+    Gtk::Viewport* _viewportMain;
+    Gtk::ListBox* _listboxMain;
 
     void initialize_widgets();
     
     void on_btnTweet_clicked();
     void on_message_received();
-    void on_stack_page_changed();
     void on_window_hide();
 
     void handleMessage(Message*);
     void handleError(std::string);
+    void handleClientList(Message*);
 
     void addTweet(std::string, std::string);
+    void addChat();
     void addStatus();
+    
     Gtk::Box* createTweetWidget(std::string, std::string);
+    Gtk::Box* createChatWidget(std::string, std::string);
 };
 
 #endif // MAIN_WINDOW_H

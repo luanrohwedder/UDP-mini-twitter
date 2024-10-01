@@ -145,10 +145,9 @@ void Server::handleClientListRequest(struct sockaddr_in clientAddr, Message *mes
     std::lock_guard<std::mutex> lock(_clientsMutex);
     for (const auto &client : _clients)
     {
-        const auto &clientInfo = client.second;
-        clientList += std::to_string(client.first) + ":" +
-                      inet_ntoa(clientInfo.address.sin_addr) + ":" +
-                      std::to_string(ntohs(clientInfo.address.sin_port)) + "\n";
+        if (client.first != message->getOriginID())
+            clientList += std::to_string(client.first) + ":" + 
+                          client.second.username + "\n";
     }
 
     Message reply(Message::LIST, 0, message->getOriginID(), _serverID, clientList);

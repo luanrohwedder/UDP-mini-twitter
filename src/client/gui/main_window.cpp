@@ -25,39 +25,41 @@ void MainWindow::setClient(std::unique_ptr<Client> client)
     _listenThread = std::thread([this]() { 
         on_message_received(); 
     });
+
+    _clientsThread = std::thread([this]() {
+        while (_client->getRunning()) {
+            _client->sendMessage("", Message::LIST);
+            std::this_thread::sleep_for(std::chrono::seconds(30));
+        }
+    });
 }
 
 void MainWindow::initialize_widgets()
 {
     _refGlade->get_widget("boxApp", _boxApp);
-    _refGlade->get_widget("stackSidebar", _stackSidebar);
-    _refGlade->get_widget("stack", _stack);
     _refGlade->get_widget("boxMain", _boxMain);
     _refGlade->get_widget("mainGrid", _mainGrid);
-    _refGlade->get_widget("boxClients", _boxClients);
     _refGlade->get_widget("headerBar", _headerBar);
     _refGlade->get_widget("btnTweet", _btnTweet);
     _refGlade->get_widget("textTweet", _textTweet);
     _refGlade->get_widget("labelUsername", _labelUsername);
     _refGlade->get_widget("imgLogo", _imgLogo);
-    _refGlade->get_widget("boxListClients", _boxListClients);
-    _refGlade->get_widget("stackClients", _stackClients);
-    _refGlade->get_widget("stackClientsSidebar", _stackClientsSidebar);
     _refGlade->get_widget("scrolledWindowText", _scrolledWindowText);
     _refGlade->get_widget("viewTweets", _viewTweets);
     _refGlade->get_widget("boxTweets", _boxTweets);
+    _refGlade->get_widget("scrolledWindowMain", _scrolledWindowMain);
+    _refGlade->get_widget("viewportMain", _viewportMain);
+    _refGlade->get_widget("listboxMain", _listboxMain);
 
     _btnTweet->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_btnTweet_clicked));
-    _stackSidebar->set_stack(*_stack);
-    _stack->connect_property_changed("visible-child", sigc::mem_fun(*this, &MainWindow::on_stack_page_changed));
     _imgLogo->set("assets/twitter_small.png");
 
     signal_hide().connect(sigc::mem_fun(*this, &MainWindow::on_window_hide));
     
 
-    if (!_boxApp || !_stackSidebar || !_stack || !_boxMain || !_mainGrid || 
-        !_boxClients || !_clientGrid ||!_btnTweet || !_textTweet || 
-        !_labelUsername || !_imgLogo || !_scrolledWindowText)
+    if (!_boxApp || !_listboxMain || !_viewportMain || !_boxMain || !_mainGrid || 
+        !_scrolledWindowMain || !_btnTweet || !_textTweet || !_labelUsername ||
+        !_imgLogo || !_scrolledWindowText)
     {
         g_warning("Failed to load one or more widgets from the Glade file.");
     }
@@ -96,7 +98,7 @@ void MainWindow::on_message_received()
                 handleError(msg->getText());
 
             if (msg->getType() == Message::LIST)
-                ;//handleList
+                handleClientList(msg);
 
             delete msg;
         }
@@ -107,27 +109,9 @@ void MainWindow::on_message_received()
     }
 }
 
-void MainWindow::on_stack_page_changed()
-{
-    if (_stack->get_visible_child_name() == "boxClients")
-    {
-        _client->receiveClientsOnline();
-
-        for (const auto& client : _client->getClientOnline())
-        {
-            auto box = Gtk::make_managed<Gtk::Box>(Gtk::ORIENTATION_HORIZONTAL, 2);
-            auto label = Gtk::make_managed<Gtk::Label>(client.second.username);
-
-            box->pack_start(*label, true, true, 0);
-
-            _stackClients->add(*box, client.second.username, client.second.username);
-        }
-    }
-}
-
 void MainWindow::on_window_hide()
 {
-    _client->sendDisconnect();
+    _client->sendMessage("", Message::TCHAU);
     std::cout << "Disconnect" << std::endl;
 }
 
@@ -159,12 +143,56 @@ void MainWindow::handleError(std::string message)
     dialog.close();
 }
 
+void MainWindow::handleClientList(Message *message)
+{
+    std::string data = message->getText();
+
+    std::unordered_map<int, std::string> newClients;
+
+    std::istringstream stream(data);
+    std::string line;
+
+    while (std::getline(stream, line))
+    {
+        std::istringstream lineStream(line);
+        std::string id, username;
+
+        if (std::getline(lineStream, id, ':') && std::getline(lineStream, username))
+        {
+            int clientID = std::stoi(id);
+            newClients[clientID] = username;
+        }
+    }
+
+    _client->setClientsOnline(newClients);
+
+    addChat();
+}
+
 void MainWindow::addTweet(std::string username, std::string tweetText)
 {
     Glib::signal_idle().connect_once([this, username, tweetText]() {
         std::lock_guard<std::mutex> lock(_textMutex);
         Gtk::Box* pBox = createTweetWidget(username, tweetText);
         _boxTweets->prepend(*pBox);
+        show_all_children();
+    });
+}
+
+void MainWindow::addChat()
+{
+    Glib::signal_idle().connect_once([this]() {
+        std::lock_guard<std::mutex> lock(_textMutex);
+        
+        for (auto child : _listboxMain->get_children())
+            _listboxMain->remove(*child);
+
+        for (const auto &client : _client->getClientsOnline())
+        {
+            Gtk::Label* pLabel = Gtk::make_managed<Gtk::Label>(client.second + "#" + std::to_string(client.first));
+            _listboxMain->prepend(*pLabel);
+        }
+
         show_all_children();
     });
 }

@@ -65,18 +65,20 @@ public:
     Message* receiveMessages();
 
     /*
-    * Getters
+    * Getters and Setters
     */
    
     int getId() const { return _id; }
     std::string getUsername() const { return _username; }
-    std::unordered_map<int, ClientInfo> getClientOnline() const { return _clientsOnline; }
+    std::unordered_map<int, std::string> getClientsOnline() const { return _clientsOnline; }
     bool getRunning() const { return _running; }
+
+    void setClientsOnline(std::unordered_map<int, std::string> clients) { this->_clientsOnline = std::move(clients); }
 
 private:
     int _id; /** Identificador do cliente */
     std::string _username; /** Nome de usuário */    
-    std::unordered_map<int, ClientInfo> _clientsOnline; /** Lista de clientes online */
+    std::unordered_map<int, std::string> _clientsOnline; /** Lista de clientes online */
 
     int _sockfd;  /** Descritor de socket UDP */
     struct sockaddr_in _serverAddr; /** Endereço do servidor */

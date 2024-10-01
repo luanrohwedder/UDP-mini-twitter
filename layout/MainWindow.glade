@@ -13,12 +13,140 @@
         <property name="height-request">540</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="spacing">5</property>
         <child>
-          <object class="GtkStackSidebar" id="stackSidebar">
+          <object class="GtkBox" id="boxMain">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="hexpand">False</property>
-            <property name="stack">stack</property>
+            <property name="hexpand">True</property>
+            <child>
+              <!-- n-columns=8 n-rows=8 -->
+              <object class="GtkGrid" id="mainGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="hexpand">True</property>
+                <property name="row-spacing">8</property>
+                <property name="column-spacing">4</property>
+                <property name="column-homogeneous">True</property>
+                <child>
+                  <object class="GtkButton" id="btnTweet">
+                    <property name="label" translatable="yes">tweet</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="margin-top">4</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">5</property>
+                    <property name="top-attach">0</property>
+                    <property name="height">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-start">4</property>
+                    <property name="margin-end">4</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                    <property name="width">8</property>
+                    <property name="height">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkTextView" id="textTweet">
+                    <property name="name">textview</property>
+                    <property name="height-request">60</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="border-width">2</property>
+                    <property name="wrap-mode">word-char</property>
+                    <property name="accepts-tab">False</property>
+                    <style>
+                      <class name="tweettext"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                    <property name="width">3</property>
+                    <property name="height">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="labelUsername">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="track-visited-links">False</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Ubuntu Condensed, Bold 20"/>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                    <property name="width">2</property>
+                    <property name="height">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="scrolledWindowText">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="margin-start">4</property>
+                    <property name="margin-end">4</property>
+                    <property name="margin-top">4</property>
+                    <property name="margin-bottom">4</property>
+                    <property name="vexpand">True</property>
+                    <property name="shadow-type">in</property>
+                    <property name="propagate-natural-width">True</property>
+                    <property name="propagate-natural-height">True</property>
+                    <child>
+                      <object class="GtkViewport" id="viewTweets">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <child>
+                          <object class="GtkListBox" id="boxTweets">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="selection-mode">none</property>
+                            <property name="activate-on-single-click">False</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">4</property>
+                    <property name="width">8</property>
+                    <property name="height">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="imgLogo">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="icon-name">image-missing</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">6</property>
+                    <property name="top-attach">0</property>
+                    <property name="width">2</property>
+                    <property name="height">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -27,195 +155,30 @@
           </packing>
         </child>
         <child>
-          <object class="GtkStack" id="stack">
+          <object class="GtkScrolledWindow" id="scrolledWindowMain">
             <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="hexpand">True</property>
+            <property name="can-focus">True</property>
+            <property name="margin-start">5</property>
+            <property name="margin-end">5</property>
+            <property name="margin-top">5</property>
+            <property name="margin-bottom">5</property>
+            <property name="shadow-type">in</property>
+            <property name="propagate-natural-width">True</property>
+            <property name="propagate-natural-height">True</property>
             <child>
-              <object class="GtkBox" id="boxMain">
+              <object class="GtkViewport" id="viewportMain">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <child>
-                  <!-- n-columns=8 n-rows=8 -->
-                  <object class="GtkGrid" id="mainGrid">
+                  <object class="GtkListBox" id="listboxMain">
+                    <property name="width-request">90</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="row-spacing">8</property>
-                    <property name="column-spacing">4</property>
-                    <property name="column-homogeneous">True</property>
-                    <child>
-                      <object class="GtkButton" id="btnTweet">
-                        <property name="label" translatable="yes">tweet</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">True</property>
-                        <property name="margin-top">4</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">5</property>
-                        <property name="top-attach">0</property>
-                        <property name="height">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">2</property>
-                        <property name="width">8</property>
-                        <property name="height">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkTextView" id="textTweet">
-                        <property name="name">textview</property>
-                        <property name="height-request">60</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="border-width">2</property>
-                        <property name="wrap-mode">word-char</property>
-                        <property name="accepts-tab">False</property>
-                        <style>
-                          <class name="tweettext"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="left-attach">2</property>
-                        <property name="top-attach">0</property>
-                        <property name="width">3</property>
-                        <property name="height">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="labelUsername">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="track-visited-links">False</property>
-                        <attributes>
-                          <attribute name="font-desc" value="Ubuntu Condensed, Bold 20"/>
-                          <attribute name="weight" value="bold"/>
-                        </attributes>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">0</property>
-                        <property name="width">2</property>
-                        <property name="height">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkScrolledWindow" id="scrolledWindowText">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="margin-start">4</property>
-                        <property name="margin-end">4</property>
-                        <property name="margin-top">4</property>
-                        <property name="margin-bottom">4</property>
-                        <property name="vexpand">True</property>
-                        <property name="shadow-type">in</property>
-                        <property name="propagate-natural-width">True</property>
-                        <property name="propagate-natural-height">True</property>
-                        <child>
-                          <object class="GtkViewport" id="viewTweets">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <child>
-                              <object class="GtkListBox" id="boxTweets">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="selection-mode">none</property>
-                                <property name="activate-on-single-click">False</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">4</property>
-                        <property name="width">8</property>
-                        <property name="height">4</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkImage" id="imgLogo">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="icon-name">image-missing</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">6</property>
-                        <property name="top-attach">0</property>
-                        <property name="width">2</property>
-                        <property name="height">2</property>
-                      </packing>
-                    </child>
+                    <property name="selection-mode">none</property>
+                    <property name="activate-on-single-click">False</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="name">boxMain</property>
-                <property name="title" translatable="yes">Main</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="boxClients">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkBox" id="boxListClients">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="hexpand">True</property>
-                    <child>
-                      <object class="GtkStackSidebar" id="stackClientsSidebar">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="stack">stackClients</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkStack" id="stackClients">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="hexpand">True</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="name">boxClients</property>
-                <property name="title" translatable="yes">Users</property>
-                <property name="position">1</property>
-              </packing>
             </child>
           </object>
           <packing>
