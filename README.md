@@ -27,7 +27,7 @@ make
 
 ### Executar o servidor
 ```
-./bin/server
+./bin/server <IP> <PORT>
 ```
 
 ### Executar o cliente
