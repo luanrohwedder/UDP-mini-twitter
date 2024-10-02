@@ -1,9 +1,19 @@
 #include "server.h"
+#include <iostream>
 #include <thread>
 
-int main()
+int main(int argc, char *argv[])
 {
-    Server server(12000);
+    if (argc != 3) 
+    {
+        std::cerr << "Uso: " << argv[0] << " <IP> <Porta>" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+     std::string ip = argv[1];
+    int port = std::stoi(argv[2]);
+
+    Server server(ip, port);
     server.start();
 
     while (true)

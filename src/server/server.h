@@ -27,10 +27,11 @@ public:
      * Inicializa o servidor UDP com a porta especificada, bind do socket e 
      *     inicío do UpTime.
      * 
+     * @param ip IP do servidor
      * @param port Porta em que o servidor vai escutar.
      * 
      */
-    Server(int);
+    Server(const std::string&, int);
 
     /**
      * @brief Destrutor da classe Server.

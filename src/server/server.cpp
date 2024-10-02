@@ -20,14 +20,17 @@ void handleStatusBroadcast(int signal)
     }
 }
 
-Server::Server(int port) : _idCount(1), _running(false)
+Server::Server(const std::string& ip, int port) : _idCount(1), _running(false)
 {
     if ((_sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
         error("Failed to create socket");
 
     memset(&_serverAddr, 0, sizeof(_serverAddr));
     _serverAddr.sin_family = AF_INET;
-    _serverAddr.sin_addr.s_addr = INADDR_ANY;
+    
+    if (inet_pton(AF_INET, ip.c_str(), &_serverAddr.sin_addr) <= 0)
+        error("Invalid IP adress");
+
     _serverAddr.sin_port = htons(port);
 
     if (bind(_sockfd, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr)) < 0)
